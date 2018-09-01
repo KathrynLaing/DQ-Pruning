@@ -22,5 +22,48 @@ We also provide the raw results of our experiments, as well as the generated gra
 
 # Dominance Testing Functions
 ## Pruning Methods
+We tested three different pruning methods:
+* Rank Pruning - ARXIV LINK
+* Penalty Pruning - (Li et al., 2011)
+* Suffix Fixing - (Boutilier et al., 2004)
+
+We tested each of these methods used individually, all possible pairwise combinations, and all three methods used together.
+This gives us 7 pruning schema options.
+Again, we refer you to section 6 of ARXIV LINK for a detailed description of how these three pruning methods work as well as how they are combined.
+
 ## Leaf Prioritisation methods
+There have been several methods of leaf prioritisation suggested in the existing literature.
+However, there has been no experimental analysis of how effective the different methods are.
+We decided, for the purposes of keeping our dominance testing functions efficient, to only implement leaf prioritisation methods that do not require additional calculations.
+Thus, we consider the following prioritisation heuristics:
+* Minimal Depth - Simply selects a leaf at minimal depth in the current search tree.
+* Penalty Prioritisation (Li et al., 2011) - Selects a leaf which has minimal *f* (evaluation function for penalty pruning) value.
+* Rank Prioritisation - Selects a leaf with maximal rank, *r*, value.
+* Rank + Difference Prioritisation - Selects a leaf, *o*, with minimal *r(o) + L_D(o, o_1)* value (for the query '*o_1>o_2*?').
+
+The latter two are our suggested heuristics, based upon our rank values introduced in ARXIV LINK.
+Search directions with higher rank (or rank + diff.) values are more likely to either be successful in reaching o_1 or to terminate quickly.
+Thus, it makes sense to prioritise these directions.
+
 ## Combinations
+As we mentioned above, only prioritisation methods that do not require additional calculations were tested.
+Below we show, for each pruning schema, which leaf prioritisation methods were tested.
+Note that, as minimal depth is not an intelligent heuristic, it was tested only for the pruning method that did not permit the others (suffix fixing alone).
+
+(R- rank pruning, P- penalty pruning, S- suffix fixing)
+* *Pruning Method - Tested Prioritisation Hueristics*
+* R - Rank Prioritisation, Rank + Diff. Prioritisation
+* P - Penalty Prioritisation
+* S - Min. Depth
+* R & P - Rank Prioritisation, Rank + Diff. Prioritisation, Penalty Prioritisation
+* R & S - Rank Prioritisation, Rank + Diff. Prioritisation
+* P & S - Penalty Prioritisation
+* R & P & S - Rank Prioritisation, Rank + Diff. Prioritisation, Penalty Prioritisation
+
+This makes the total number of tested functions 13.
+The R functions to answer dominance queries using these different functions are given in the R Script `DominanceTestingFunctions.R`
+
+**REFERENCES**\
+Boutilier, C., Brafman, R. I., Domshlak, C., Hoos, H. H., and Poole, D. (2004). CP-nets: A tool for representing and reasoning with conditional *Ceteris Paribus* preference statements. *Journal of Artifcial Intelligence Research*, 21:135-191.
+
+Li, M., Vo, Q. B., and Kowalczyk, R. (2011). Efficient heuristic approach to dominance testing in CP-nets. In Tumer, Yolum, Sonenberg, and Stone, editors, *Proc. of 10th International Conference on Autonomous Agents and Multiagent Systems*, pages 353-360, Taipei, Taiwan.
