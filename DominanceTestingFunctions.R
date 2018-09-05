@@ -179,7 +179,8 @@ dig=max(c((2*ceiling(log(prod(N),base=2))+1),40))
 
 #Dominance Testing Function using Rank or Rank + Suffix fixing pruning
 #-Inputs: o1,o2,A,CPT as above
-#         priority={"r" - rank prioritisation of leaves, "r.diff" - rank + diff prioritisation of leaves}
+#         priority={"rank" - rank prioritisation of leaves,
+#                   "rank.diff" - rank + diff prioritisation of leaves}
 #         suffix={FALSE - rank pruning, TRUE - rank + suffix fixing pruning}
 #         dig - precision, calculated as above
 
@@ -188,7 +189,7 @@ dig=max(c((2*ceiling(log(prod(N),base=2))+1),40))
 #           2)Outcomes.Considered, as defined in ARXIV LINK
 #           3)Time.Elapsed in seconds until the function terminates (i.e. time taken to answer the query)
 
-DQ.Rank<-function(o1,o2,A,CPT,priority="r",suffix=TRUE,dig){
+DQ.Rank<-function(o1,o2,A,CPT,priority="rank",suffix=TRUE,dig){
   START=as.numeric(Sys.time())
   #START- time the function was started
   if(all(o2==o1)){
@@ -257,12 +258,12 @@ DQ.Rank<-function(o1,o2,A,CPT,priority="r",suffix=TRUE,dig){
   }
   count=1
   #count - the number of outcomes in the search tree, currently it is just o2
-  if(priority=="r.diff"){
+  if(priority=="rank.diff"){
     S=mpfrArray(o2,precBits=dig)
     S=c(S,r2+difference)
     Search=mpfr2array(S,c(1,(n+1)))
   }
-  if(priority=="r"){
+  if(priority=="rank"){
     S=mpfrArray(o2,precBits=dig)
     S=c(S,r2)
     Search=mpfr2array(S,c(1,(n+1)))
@@ -328,11 +329,11 @@ DQ.Rank<-function(o1,o2,A,CPT,priority="r",suffix=TRUE,dig){
                 DIFF=which(o1!=o3)
                 difference=mpfr(sum(Least.Inc[DIFF]),dig)
                 if(roundMpfr(r+difference,precBits=ceiling(dig/2))<=roundMpfr(r1,precBits=ceiling(dig/2))){
-                  if(priority=="r.diff"){
+                  if(priority=="rank.diff"){
                     k=dim(Search)[1]
                     Search=t(mpfr2array(c(t(Search),o3,(r+difference)),c((n+1),(k+1))))
                   }
-                  if(priority=="r"){
+                  if(priority=="rank"){
                     k=dim(Search)[1]
                     Search=t(mpfr2array(c(t(Search),o3,r),c((n+1),(k+1))))
                   }
@@ -379,11 +380,11 @@ DQ.Rank<-function(o1,o2,A,CPT,priority="r",suffix=TRUE,dig){
               DIFF=which(o1!=o3)
               difference=mpfr(sum(Least.Inc[DIFF]),dig)
               if(roundMpfr(r+difference,precBits=ceiling(dig/2))<=roundMpfr(r1,precBits=ceiling(dig/2))){
-                if(priority=="r.diff"){
+                if(priority=="rank.diff"){
                   k=dim(Search)[1]
                   Search=t(mpfr2array(c(t(Search),o3,(r+difference)),c((n+1),(k+1))))
                 }
-                if(priority=="r"){
+                if(priority=="rank"){
                   k=dim(Search)[1]
                   Search=t(mpfr2array(c(t(Search),o3,r),c((n+1),(k+1))))
                 }
@@ -448,6 +449,7 @@ DQ.Penalty<-function(o1,o2,A,CPT,suffix=TRUE,dig){
     return(list(DQ.Reult="False, N does not entail o1 > o2",Outcomes.Considered=0,Time.Elapsed=TIMER))
   }
   #If the evaluation function, f, is negative, then the query is trivially false
+  #(f - the evaluation function based upon penalty values)
   n=length(o1)
   #n=number of variables
   if(suffix==TRUE){
@@ -465,7 +467,6 @@ DQ.Penalty<-function(o1,o2,A,CPT,suffix=TRUE,dig){
   Search=mpfr2array(S,c(1,(n+1)))
   #Search is a matrix with (n+1) columns. This matrix stores the outcomes currently in the search tree.
   #The first n columns of a row give the outcome, o. The end column gives f(o)
-  #(f - the evaluation function based upon penalty values).
   #Currently the only outcome in the tree is o2.
   count=1
   #count - the number of outcomes in the search tree
@@ -726,6 +727,305 @@ DQ.SF<-function(o1,o2,A,CPT,dig){
     #new outcomes will have depth 1 greater than the outcome considered. By this process, the outcome 
     #considered will always have minimal depth out of the unconsidered outcomes (unconsidered leaves).
     #Thus, we are prioritising unconsidered leaves at minimal depth.
+  }
+  TIMER=as.numeric(Sys.time())-START
+  return(list(DQ.Reult="False, N does not entail o1 > o2",Outcomes.Considered=count,Time.Elapsed=TIMER))
+  #If there are no leaves left to consider (and we did not reach o1) then the search tree is fully constructed
+  #and thus the query must be false - we cannot reach o1 from o2 by improving flips
+}
+
+
+#Dominance Testing Function using Penalty + Rank or Penalty + Rank + Suffix fixing pruning
+#-Inputs: o1,o2,A,CPT as above
+#         priority={"rank" - rank prioritisation of leaves,
+#                   "rank.diff" - rank + diff prioritisation of leaves,
+#                   "penalty" - penalty prioritisation of leaves}
+#         suffix={FALSE - Penalty + rank pruning, TRUE - Penalty + rank + suffix fixing pruning}
+#         dig - precision, calculated as above
+
+#-Outputs:  list of length 3:
+#           1)DQ result, either "False, N does not entail o1 > o2" or "False, N does not entail o1 > o2"
+#           2)Outcomes.Considered, as defined in ARXIV LINK
+#           3)Time.Elapsed in seconds until the function terminates (i.e. time taken to answer the query)
+
+DQ.PR<-function(o1,o2,A,CPT,priority="penalty",suffix=TRUE,dig){
+  START=as.numeric(Sys.time())
+  #START- time the function was started
+  if(all(o2==o1)){
+    TIMER=as.numeric(Sys.time())-START
+    return(list(DQ.Reult="False, N does not entail o1 > o2",Outcomes.Considered=0,Time.Elapsed=TIMER))
+  }
+  # If the two outcomes are the same, o1=o2, then the query is trivially false
+  one=Pen.Rank(o1,A,CPT,dig=dig)
+  two=Pen.Rank(o2,A,CPT,dig=dig)
+  r1=one$Rank
+  r2=two$Rank
+  #r1,r2 are the ranks of outcomes o1 and o2
+  p1=one$Penalty
+  p2=two$Penalty
+  #p1,p2 are the penalties of outcomes o1 and o2
+  f=p2 - length(which(o1!=o2)) - p1
+  if(f<0){
+    TIMER=as.numeric(Sys.time())-START
+    return(list(DQ.Reult="False, N does not entail o1 > o2",Outcomes.Considered=0,Time.Elapsed=TIMER))
+  }
+  #If the evaluation function, f, is negative, then the query is trivially false
+  #(f - the evaluation function based upon penalty values)
+  n=length(o1)
+  #n=number of variables
+  N=c()
+  for(i in 1:n){
+    N=c(N,n.val(i,CPT))
+  }
+  #N - vector of variable domain sizes
+  PA=list()
+  CH=list()
+  for(i in 1:n){
+    PA[[i]]=which(A[,i]!=0)
+    CH[[i]]=which(A[i,]!=0)
+  }
+  #PA - list of the parent sets for each variable
+  #CH - list of the children sets for each variable
+  Anc=list()
+  anc=c()
+  for(i in 1:n){
+    a=which(ancestor(i,A)!=0)
+    Anc[[i]]=a
+    anc=c(anc,length(a))
+  }
+  #Anc - list of the ancestor sets for each variable
+  #anc - vector giveing the number of ancestors for each variable
+  RTO=order(-anc)
+  D=mpfrArray(NA,dim = n, precBits = dig)
+  for(i in RTO){
+    ch=CH[[i]]
+    d=mpfr(0,dig)
+    for(j in ch){
+      d=mpfr(d+D[j]+1,dig)
+    }
+    D[i]=d
+  }
+  Least.Inc=mpfrArray(NA,dim = n, precBits = dig)
+  for(i in 1:n){
+    Inc=mpfr(prod(N[Anc[[i]]])^(-1)*(D[i]+1)/N[i],dig)
+    Dec=mpfr(0,dig)
+    for(j in CH[[i]]){
+      Dec=mpfr(Dec + prod(N[Anc[[j]]])^(-1)*(D[j]+1)*(N[j]-1)/N[j],dig)
+    }
+    Least.Inc[i]=mpfr(Inc-Dec,dig)
+  }
+  #Least.Inc - a vector giving the Least Rank Improvement for each variable
+  DIFF=which(o1!=o2)
+  difference=mpfr(sum(Least.Inc[DIFF]),dig)
+  if( roundMpfr(r2+difference,precBits=ceiling(dig/2))>roundMpfr(r1,precBits=ceiling(dig/2))){
+    TIMER=as.numeric(Sys.time())-START
+    return(list(DQ.Reult="False, N does not entail o1 > o2",Outcomes.Considered=0,Time.Elapsed=TIMER))
+  }
+  #If r(o1)< r(o2) + L_D(o1,o2) then the query is trivially false
+  #(r - rank function, L_D - Least rank difference function)
+  if(suffix==TRUE){
+    TO=order(anc)
+    #TO - a topological ordering of the variables
+  }
+  count=1
+  #count - the number of outcomes in the search tree, currently it is just o2
+  len=1
+  #len - the number of outcomes we have considered thus far plus 1
+  #Note that we have not yet considered any outcomes
+  if(priority=="rank.diff"){
+    S=mpfrArray(o2,precBits=dig)
+    S=c(S,r2+difference)
+    Search=mpfr2array(S,c(1,(n+1)))
+  }
+  if(priority=="rank"){
+    S=mpfrArray(o2,precBits=dig)
+    S=c(S,r2)
+    Search=mpfr2array(S,c(1,(n+1)))
+  }
+  if(priority=="penalty"){
+    S=mpfrArray(o2,precBits=dig)
+    S=c(S,f)
+    Search=mpfr2array(S,c(1,(n+1)))
+  }
+  #Search is a matrix with (n+1) columns. This matrix stores the outcomes currently in the search tree.
+  #The first n columns of a row give the outcome, o. The end column gives either f(o), r(o) or 
+  #r(o)+L_D(o,o1) depending on whether penalty, rank or rank + diff prioritisation is being used.
+  #Currently the only outcome in the tree is o2.
+  Q=1
+  #Q - the number of unconsidered leaves in the search tree - currently only o2
+  while(Q!=0){
+    #while there are unconsidered leaves left in the tree:
+    o=Search[len,1:n]
+    o.v=asNumeric(o)
+    #o - next leaf of the tree to be considered (selected by choosing the first listed of the unconsidered leaves in Search)
+    #o.v - same outcome as o, with entries stored as numbers
+    if(suffix==TRUE){
+      ss=max(which(o.v[TO]!=o1[TO]))
+      if(ss==n){
+        SUFF=integer(0)
+      }
+      else{
+        SUFF=TO[(ss+1):n]
+      }
+      #SUFF - the variables in the matching suffix of o1 and o
+      #(suffix calculated according to topological ordering TO)
+    }
+    for(i in 1:n){
+      if(suffix==TRUE){
+        if(!(i%in%SUFF)){
+          #If we are using suffix fixing, then for all variables, i, NOT in the matching suffix:
+          p=CPT[[i]][matrix(c(o.v[PA[[i]]],o.v[i]),1)]
+          #p - preference position of the value taken by variable i in o (given the parents of i take their values in o)
+          if(p!=1){
+            #If the preference position of variable i can be improved by changing its value:
+            pref=c()
+            for(j in 1:N[i]){
+              pref=c(pref,CPT[[i]][matrix(c(o.v[PA[[i]]],j),1)])
+            }
+            flip=which(pref<p)
+            #flip - The values of variable i that would be prefered to the one it takes in o
+            for(j in flip){
+              #for each of these 'better' values, j:
+              o3=o
+              o3[i]=j
+              o3.v=asNumeric(o3)
+              #o3 - outcome obtained from o by flipping the value of variable i to the better value j
+              if(all(o1==o3)){
+                TIMER=as.numeric(Sys.time())-START
+                return(list(DQ.Reult="True, N does entail o1 > o2",Outcomes.Considered=count,Time.Elapsed=TIMER))
+              }
+              #If o3=o1 then we have reached o1 from o2 by improving flips. Thus the query is true.
+              b=FALSE
+              if(!(any(unlist(apply(Search,1,function(x) all.equal(x[1:n],o3)==TRUE))))){
+                b=TRUE
+              }
+              if(b){
+                #If o3 (the new flip) is not already in the tree:
+                imp=Pen.Rank(o3.v,A,CPT,dig=dig)
+                r=imp$Rank
+                p=imp$Penalty
+                f=p - length(which(o1!=o3)) - p1
+                #r is the rank of o3, r(o3)
+                #p is the penalty of o3
+                #f is the evaluation function value at o3, f(o3)
+                if(f>=0){
+                  #If f(o3)>=0 :
+                  DIFF=which(o1!=o3)
+                  difference=mpfr(sum(Least.Inc[DIFF]),dig)
+                  if(roundMpfr(r+difference,precBits=ceiling(dig/2))<=roundMpfr(r1,precBits=ceiling(dig/2))){
+                    #If r(o1)>=r(o3)+L_D(o1,o3) :
+                    if(priority=="rank.diff"){
+                      k=dim(Search)[1]
+                      Search=t(mpfr2array(c(t(Search),o3,(r+difference)),c((n+1),(k+1))))
+                    }
+                    if(priority=="rank"){
+                      k=dim(Search)[1]
+                      Search=t(mpfr2array(c(t(Search),o3,r),c((n+1),(k+1))))
+                    }
+                    if(priority=="penalty"){
+                      k=dim(Search)[1]
+                      Search=t(mpfr2array(c(t(Search),o3,f),c((n+1),(k+1))))
+                    }
+                    #Add o3 to the tree, i.e to Search (along with the f(o3), r(o3) or r(o3)+L_D(o1,o3)
+                    #value depending on prioritisation choice)
+                    count=count+1
+                    #increase the count of the number of outcomes in the tree by 1 as we have added o3
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      else{
+        #If not using Suffix fixing, then for each variable, i:
+        p=CPT[[i]][matrix(c(o.v[PA[[i]]],o.v[i]),1)]
+        #p - preference position of the value taken by variable i in o (given the parents of i take their values in o)
+        if(p!=1){
+          #If the preference position of variable i can be improved by changing its value:
+          pref=c()
+          for(j in 1:N[i]){
+            pref=c(pref,CPT[[i]][matrix(c(o.v[PA[[i]]],j),1)])
+          }
+          flip=which(pref<p)
+          #flip - The values of variable i that would be prefered to the one it takes in o
+          for(j in flip){
+            #for each of these 'better' values, j:
+            o3=o
+            o3[i]=j
+            o3.v=asNumeric(o3)
+            #o3 - outcome obtained from o by flipping the value of variable i to the better value j
+            if(all(o1==o3)){
+              TIMER=as.numeric(Sys.time())-START
+              return(list(DQ.Reult="True, N does entail o1 > o2",Outcomes.Considered=count,Time.Elapsed=TIMER))
+            }
+            #If o3=o1 then we have reached o1 from o2 by improving flips. Thus the query is true.
+            b=FALSE
+            if(!(any(unlist(apply(Search,1,function(x) all.equal(x[1:n],o3)==TRUE))))){
+              b=TRUE
+            }
+            if(b){
+              #If o3 (the new flip) is not already in the tree:
+              imp=Pen.Rank(o3.v,A,CPT,dig=dig)
+              r=imp$Rank
+              p=imp$Penalty
+              f=p - length(which(o1!=o3)) - p1
+              #r is the rank of o3, r(o3)
+              #p is the penalty of o3
+              #f is the evaluation function value at o3, f(o3)
+              if(f>=0){
+                #If f(o3)>=0 :
+                DIFF=which(o1!=o3)
+                difference=mpfr(sum(Least.Inc[DIFF]),dig)
+                if(roundMpfr(r+difference,precBits=ceiling(dig/2))<=roundMpfr(r1,precBits=ceiling(dig/2))){
+                  #If r(o1)>=r(o3)+L_D(o1,o3) :
+                  if(priority=="rank.diff"){
+                    k=dim(Search)[1]
+                    Search=t(mpfr2array(c(t(Search),o3,(r+difference)),c((n+1),(k+1))))
+                  }
+                  if(priority=="rank"){
+                    k=dim(Search)[1]
+                    Search=t(mpfr2array(c(t(Search),o3,r),c((n+1),(k+1))))
+                  }
+                  if(priority=="penalty"){
+                    k=dim(Search)[1]
+                    Search=t(mpfr2array(c(t(Search),o3,f),c((n+1),(k+1))))
+                  }
+                  #Add o3 to the tree, i.e to Search (along with the f(o3), r(o3) or r(o3)+L_D(o1,o3)
+                  #value depending on prioritisation choice)
+                  count=count+1
+                  #increase the count of the number of outcomes in the tree by 1 as we have added o3
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    l=dim(Search)[1]
+    #l-number of outcomes in the tree currently
+    if((l-len)>1){
+      #If there are 2+ unconsidered leaves in the tree:
+      if(priority=="penalty"){
+        Search[((len+1):l),]=Search[(order(Search[((len+1):l),(n+1)])+len),]
+      }
+      else{
+        Search[((len+1):l),]=Search[(order(-Search[((len+1):l),(n+1)])+len),]
+      }
+      #These leaves will all be at the bottom of Search as we add leaves to the tree by adding them 
+      #to the bottom of Search and we pick the next leaf to consider by selecting the top unconsidered leaf
+      
+      #If we are using penalty prioritisation, reorder these unconsidered leaves in Search by ordering them 
+      #in terms of increasing f(*) values (recall, this is stored in the n+1 column of Search)
+      #If we are using rank/rank+diff prioritisation, reorder these unconsidered leaves in Search by ordering
+      #them in terms of decreasing r(*) or r(*)+L_D(*,o1) value respectively (This is stored in the n+1 column 
+      #of Search - recall this is determined by the prioritisation method chosen)
+      #- This is the implementation of the prioritisation method chosen
+    }
+    Q=l-len
+    #update the number of unconsidered leaves in the tree
+    len=len+1
+    #o has now been considered so we increase len by 1
   }
   TIMER=as.numeric(Sys.time())-START
   return(list(DQ.Reult="False, N does not entail o1 > o2",Outcomes.Considered=count,Time.Elapsed=TIMER))
