@@ -19,6 +19,19 @@ You may also vary the values of the maximum possible size of variable domain and
 We also provide the raw results of our experiments, as well as the generated graphs of the average performance of the different functions.
 
 # CP-Net Generator
+The CP-net generator we used for these experiments takes some inspiration from the CP-net generator described in (Allen et al., 2016). In particular, the usage of the dagcode representation of DAGs, and the test for conditional preference table (CPT) degeneracy. However, our generator does not guarantee a specific distribution over the generated CP-nets. This is because the probability vectors required by Allen et al. (2016), to make their generation uniform, required more precision than was possible for our computational resources. Our generator also differs from theirs in that it allows variables to have different domain sizes (whereas Allen et al. (2016) requires all variables to have the same domain size).
+
+The CP-net generator function, `rand.cpn` is given in the R script `CPNGenerator.R`, along with all of its dependent functions. Note that these functions require the R libraries `primes` and `Rmpfr`. In this script, we also illustrate through an example what the output CP-nets look like as R objects. We also give an example of generating an associated outcome. These are the required inputs for the following dominance testing functions.
+
+The CP-net generator function works as follows:
+1. Generate a valid dagcode
+2. Convert this dagcode to the adjacency matrix, A, of the associated DAG
+3. `for` each variable:\
+    a. Generate a random CPT\
+    b. `if` CPT is degenerate, i.e. invalid `then` go back to 3a
+6. Return the CP-net as the pair (A, CPT)
+
+`rand.cpn(n,p,d)` outputs a random CP-net with *n* variables, each of which has domain size in 2-*d*, and each of which has no more than *p* parents.
 
 # Dominance Testing Functions
 ## Pruning Methods
@@ -61,9 +74,47 @@ Note that, as minimal depth is not an intelligent heuristic, it was tested only 
 * R & P & S - Rank Prioritisation, Rank + Diff. Prioritisation, Penalty Prioritisation
 
 This makes the total number of tested functions 13.
-The R functions to answer dominance queries using these different functions are given in the R Script `DominanceTestingFunctions.R`
+
+## R Functions
+The R functions to answer dominance queries using these different functions are given in the R Script `DominanceTestingFunctions.R`.
+Suppose we wish to answer the dominance query 'o1>o2 ?' (o1, o2 outcomes) for the CP-net N.
+Let `A` be the adjacency matrix of the structure of N and let `CPT` be a list of the conditional preference tables (CPTs) of N.
+To answer this dominance query using the different pruning and prioritisation combinations above, use the following R functions, found in `DominanceTestingFunctions.R`:
+
+* **Rank Pruning, Rank Prioritisation**\
+`DQ.Rank(o1,o2,A,CPT,priority="rank",suffix=FALSE,dig)`
+* **Rank Pruning, Rank + Difference Prioritisation**\
+`DQ.Rank(o1,o2,A,CPT,priority="rank.diff",suffix=FALSE,dig)`
+* **Penalty Pruning, Penalty Prioritisation**\
+`DQ.Penalty(o1,o2,A,CPT,suffix=FALSE,dig)`
+* **Suffix Fixing, Minimal Depth Prioritisation**\
+`DQ.SF(o1,o2,A,CPT,dig)`
+* **Rank Pruning + Penalty Pruning, Rank Prioritisation**\
+`DQ.PR(o1,o2,A,CPT,priority="rank",suffix=FALSE,dig)`
+* **Rank Pruning + Penalty Pruning, Rank + Difference Prioritisation**\
+`DQ.Rank(o1,o2,A,CPT,priority="rank.diff",suffix=FALSE,dig)`
+* **Rank Pruning + Penalty Pruning, Penalty Prioritisation**\
+`DQ.Rank(o1,o2,A,CPT,priority="penalty",suffix=FALSE,dig)`
+* **Rank Pruning + Suffix Fixing, Rank Prioritisation**\
+`DQ.Rank(o1,o2,A,CPT,priority="rank",suffix=TRUE,dig)`
+* **Rank Pruning + Suffix Fixing, Rank + Difference Prioritisation**\
+`DQ.Rank(o1,o2,A,CPT,priority="rank.diff",suffix=TRUE,dig)`
+* **Penalty Pruning + Suffix Fixing, Penalty Prioritisation**\
+`DQ.Penalty(o1,o2,A,CPT,suffix=TRUE,dig)`
+* **Rank Pruning + Penalty Pruning + Suffix Fixing, Rank Prioritisation**\
+`DQ.PR(o1,o2,A,CPT,priority="rank",suffix=TRUE,dig)`
+* **Rank Pruning + Penalty Pruning + Suffix Fixing, Rank + Difference Prioritisation**\
+`DQ.Rank(o1,o2,A,CPT,priority="rank.diff",suffix=TRUE,dig)`
+* **Rank Pruning + Penalty Pruning + Suffix Fixing, Penalty Prioritisation**\
+`DQ.Rank(o1,o2,A,CPT,priority="penalty",suffix=TRUE,dig)`
+
+Note that `dig` is a specified level of precision. How this is calculated, for the CP-net of interest, is given in `DominanceTestingFunctions.R`. Further, each of these functions relies on a set of minor functions (`DP`,`ancestor`,`n.val`,`Rank`,`Penalty`,and `Pen.Rank`) that are given at the start of `DominanceTestingFunctions.R` and must be loaded before the dominance testing functions may be used. These functions also require two R libraries, `primes` and `Rmpfr`.
+
+These dominance testing functions output the outcome of the dominance query, the number of outcomes traversed, and the time taken to answer the query.
 
 **REFERENCES**\
+Allen, T.E., Goldsmith, G., Justice, H.E., Mattei, N., and Raines, K. (2016). Generating CP-nets Uniformly at Random. *Proc. of 30th Annual Converence of the Association for the Advancement of Artificial Intelligence*, pages 872-878, Arizona, USA.
+
 Boutilier, C., Brafman, R. I., Domshlak, C., Hoos, H. H., and Poole, D. (2004). CP-nets: A tool for representing and reasoning with conditional *Ceteris Paribus* preference statements. *Journal of Artifcial Intelligence Research*, 21:135-191.
 
 Li, M., Vo, Q. B., and Kowalczyk, R. (2011). Efficient heuristic approach to dominance testing in CP-nets. In Tumer, Yolum, Sonenberg, and Stone, editors, *Proc. of 10th International Conference on Autonomous Agents and Multiagent Systems*, pages 353-360, Taipei, Taiwan.
