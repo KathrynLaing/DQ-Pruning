@@ -25,11 +25,12 @@ The CP-net generator function, `rand.cpn` is given in the R script `CPNGenerator
 
 The CP-net generator function works as follows:
 1. Generate a valid dagcode
-2. Convert this dagcode to the adjacency matrix, A, of the associated DAG
-3. `for` each variable:\
-    a. Generate a random CPT\
-    b. `if` CPT is degenerate, i.e. invalid `then` go back to 3a
-6. Return the CP-net as the pair (A, CPT)
+2. Convert this dagcode to the adjacency matrix, *A*, of the associated DAG
+3. `for` each variable: Generate a random CPT
+4. `if` any of these CPTs are degenerate `then` go back to step 3
+5. Return the CP-net as the pair (*A*, *CPT*) where *CPT* is a list of the generated CPTs
+
+For the theory of dagcodes, obtaining DAGs from dagcodes, and their equivalence, we refer you to Allen et al. (2016). A CPT, say the CPT of variable *X* (CPT(*X*)), is degenerate, or invalid, if it implies that one of the parents of *X* is not valid. A parent, *Y*, of *X* is valid if you can change the user's preference over *X* by changing the value taken by *Y only*. Thus, a CPT of *X* is valid (non-degenerate) if, for every parent *Y*, there are two rows where the parental assignment differs only on the value taken by *Y* and the preference over *X* is different in these two rows.
 
 `rand.cpn(n,p,d)` outputs a random CP-net with *n* variables, each of which has domain size in 2-*d*, and each of which has no more than *p* parents.
 
