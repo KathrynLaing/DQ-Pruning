@@ -76,6 +76,8 @@ Note that, as minimal depth is not an intelligent heuristic, it was tested only 
 
 This makes the total number of tested functions 13.
 
+In ARXIV LINK, for each pruning option, only one function's performance was presented. For those pruning methods with multiple prioritisation options, it is the function that uses rank pruning that is presented in the paper. The reasoning for this is given below in the Results Plots section.
+
 ## R Functions
 The R functions to answer dominance queries using these different functions are given in the R Script `DominanceTestingFunctions.R`.
 Suppose we wish to answer the dominance query 'o1>o2 ?' (o1, o2 outcomes) for the CP-net N.
@@ -140,6 +142,15 @@ Note that the data given is not complete. For the non-binary case (`d=5`), the e
 
 # Result Plots
 For each `n` and `d` combination, each of the 13 dominance testing functions are used to answer a set of 1000 dominance queries and outcomes considered and times elapsed is recorded in each instance. We have averaged these results over the 1000 queries, giving us 4 data sets: Binary CP-nets - Outcomes Considered, Binary CP-nets - Time Elapsed, Multivalued CP-nets - Outcomes Considered, Multivalued CP-nets - Time Elapsed. Each data set has an average value for each dominance testing function, for each value of `n`. These are plotted on the graphs in `Result Plots`.
+
+Each data set is presented over three plots. The prefix of the PDF identifies which data set it is for (`Binary-Outcomes`,`Binary-Time`, `Multivalued-Outcomes`,`Multivalued-Time`). Each data set has three plots, with the title suffixes `-Single`, `-Pairs`, and `-Triples`. The `Single` plot shows the performance of the single pruning methods (Rank, Penalty, Suffix Fixing), with all possible leaf prioritisations. This plot is given on a log scale to preserve legibility. The `Pairs` plot shows the performance of all pairwise combinations (Rank + Penalty, Penalty + Suffix Fixing, Rank + Suffix Fixing), with all possible leaf prioritisations. The `Triples` plot shows the performance of the dominance testing function that used all three pruning measures. Some functions appear in multiple plots so that performance can be compared between different plots.
+
+The shaded areas in the plot represent +/-standard error intervals. For a discussion of the variability represented by this interval, we refer you to ARXIV LINK. In the `Single` plot, it is the standard error interval of the 'Rank Pruning with Rank + Difference Prioritisation' function. In the `Pairs` plot, it is the standard error interval of the 'Rank Pruning + Suffix Fixing with Rank Prioritisation' function. In the `Triples` plot, it is the standard error interval of the 'Penalty Pruning + Rank Pruning +Suffix Fixing with Penalty Prioritisation' function.
+
+For a discussion of these results, please consult ARXIV LINK. The additional results presented here (as opposed to in the paper) provide a comparison of the same pruning method when tested with different prioritisation techniques. For the functions where prioritisation was allowed to vary, rank prioritsation performs better than penalty prioritisation which in turn performs better than rank + difference prioritisation in the majority of cases for these results. This is why, for all such functions, the rank prioritisation case is presented in ARXIV LINK as the optimal prioritisation choice. However, this relative performance of the different prioritisations is not always the case. Further, the difference made to performance by switching prioritisation method is generally not significant. Thus, from these results, we do not feel able to conclude that one prioritisation choice is better than another in general.
+
+**ACKNOWLEDGEMENTS**\
+The work of K. Laing was supported by a University of Leeds Research Scholarship. This work was undertaken on ARC3, part of the High Performance Computing facilities at the University of Leeds, UK.
 
 **REFERENCES**\
 Allen, T.E., Goldsmith, G., Justice, H.E., Mattei, N., and Raines, K. (2016). Generating CP-nets Uniformly at Random. *Proc. of 30th Annual Converence of the Association for the Advancement of Artificial Intelligence*, pages 872-878, Arizona, USA.
