@@ -113,6 +113,31 @@ Note that `dig` is a specified level of precision. How this is calculated, for t
 
 These dominance testing functions output the outcome of the dominance query, the number of outcomes traversed, and the time taken to answer the query.
 
+# Results
+The results of the experiments described about are given in the file `Raw Performance Results`. Recall that we performed the following experiment twice (once in the case of binary CP-nets `d=2`, once in the case of multivalued CP-nets where variable domains were allowed to be up to 5 `d=5`). Note that, in the binary case we used `n=3-10` and in the multivalued case `n=3-8`. First, we generated 100 CP-nets. The *kth* CP-net is given in the file `CPN.npd.k.RData` (`p=n-1`, `k` in 1-100). The format of these CP-nets is as discussed in `CPNGenerator.R`.
+
+For each of these CP-nets, 10 dominance queries were generated. The 10 dominance queries for the `CPN.npd.k.RData` CP-net can be found in the file `DQ.npd.k.RData`. A dominance query asks if 'o1>o2' is entailed. The 10 o1 outcomes are given in order in the vector `O1` (which has length *10 x n*). Similarly, the o2 outcomes are given in vector `O2`.
+
+Each of these 1000 queries were then answered by the 13 different dominance testing functions described above. The result and performance of these functions, when answering the 10 queries for the CP-net `CPN.npd.k.RData`, can be found in the following files:
+
+* **Rank Pruning, Rank Prioritisation** `Rank.R.npd.k.RData`
+* **Rank Pruning, Rank + Difference Prioritisation** `Rank.RDiff.npd.k.RData`
+* **Penalty Pruning, Penalty Prioritisation** `Pen.npd.k.RData`
+* **Suffix Fixing, Minimal Depth Prioritisation** `SF.npd.k.RData`
+* **Rank Pruning + Penalty Pruning, Rank Prioritisation** `Pen.Rank.R.npd.k.RData`
+* **Rank Pruning + Penalty Pruning, Rank + Difference Prioritisation** `Pen.Rank.RDiff.npd.k.RData`
+* **Rank Pruning + Penalty Pruning, Penalty Prioritisation** `Pen.Rank.P.npd.k.RData`
+* **Rank Pruning + Suffix Fixing, Rank Prioritisation** `Rank.SF.R.npd.k.RData`
+* **Rank Pruning + Suffix Fixing, Rank + Difference Prioritisation** `Rank.SF.RDiff.npd.k.RData`
+* **Penalty Pruning + Suffix Fixing, Penalty Prioritisation** `Pen.SF.npd.k.RData`
+* **Rank Pruning + Penalty Pruning + Suffix Fixing, Rank Prioritisation** `Pen.Rank.SF.R.npd.k.RData`
+* **Rank Pruning + Penalty Pruning + Suffix Fixing, Rank + Difference Prioritisation** `Pen.Rank.SF.RDiff.npd.k.RData`
+* **Rank Pruning + Penalty Pruning + Suffix Fixing, Penalty Prioritisation** `Pen.Rank.SF.P.npd.k.RData`
+
+Each of these files contains a list and two vectors, all of length 10. The list, `Result`, gives the outcomes of the 10 dominance queries, as found by this function (note: the `Result` list for all 13 functions sohuld be identical). The two vectors should end in `Count` and `Time`, the begining is determined by the function used. For example, `Pen.SF.npd.k.RData` countains {`Result`, `Pen.F.SUFF.Count`, `Pen.F.SUFF.Time`}. This prefix is indicative of the function used, though some contain naming conventions from previous versions of this experiment, e.g. the F in the given example. The `Count` vector gives the number of outcomes considered in each of the 10 queries before an answer cound be determined (when using the given dominance testing function). The `Time` vector gives the time elapsed before an answer cound be determined, for each of the 10 queries (when using the given dominance testing function).
+
+Note that the data given is not complete. For the non-binary case (`d=5`), the experiments have not completed in the following cases. Suffix fixing for `n=7,8`. Penalty pruning for `n=8`. Penalty pruning + suffix fixing for `n=8`. Thus, these results are not included in the file. Once they have completed, the results files will be added. As you will see from the data/plots, these three functions perform significantly worse than the others. That is, they take considerably longer on average to answer dominance queries, which is why these experiments in particular have not yet completed.
+
 **REFERENCES**\
 Allen, T.E., Goldsmith, G., Justice, H.E., Mattei, N., and Raines, K. (2016). Generating CP-nets Uniformly at Random. *Proc. of 30th Annual Converence of the Association for the Advancement of Artificial Intelligence*, pages 872-878, Arizona, USA.
 
