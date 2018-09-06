@@ -1,3 +1,10 @@
+This repository is a counterpart to our paper, ARXIV LINK, where we give additional details of the experiment described in Section 6. This includes:
+1. A description of the random CP-net generator used, as well as the code for this generator
+2. An explanation of the different leaf prioritisations tested. Which prioritisations were used in the presented results in ARXIV LINK.
+3. The code for our different dominance testing functions.
+4. The raw results of our experiments (using all possible prioritisation options).
+5. Plots of these results, similar to those given in the paper, only now presenting the results for all prioritisation options.
+
 # Experiment
 As detailed in our paper, ARXIV LINK, we conducted an experiment to compare the performance of several dominance testing functions for CP-Nets.
 Each dominance testing function answers dominance queries by building the associated search tree.
