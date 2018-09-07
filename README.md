@@ -26,7 +26,7 @@ You may also vary the values of the maximum possible size of variable domain and
 # CP-Net Generator
 The CP-net generator we used for these experiments takes some inspiration from the CP-net generator described by Allen et al. (2016). In particular, the usage of the dagcode representation of DAGs, and the test for conditional preference table (CPT) degeneracy. However, our generator does not guarantee a specific distribution over the generated CP-nets. This is because the probability vectors required by Allen et al. (2016), to make their generation uniform, required more precision than was possible for our computational resources. Our generator also differs from theirs in that it allows variables to have different domain sizes (whereas Allen et al. (2016) requires all variables to have the same domain size).
 
-The CP-net generator function, `rand.cpn`, is given in the R script `CPNGenerator.R`, along with all of its dependent functions. Note that these functions require the R libraries `primes` and `Rmpfr`. In this script, we also give an illustrative example of what the output CP-nets look like as R objects. We also show how to generate an associated outcome. These are the required inputs for the dominance testing functions.
+Our CP-net generator function, `rand.cpn`, is given in the R script `CPNGenerator.R`, along with all of its dependent functions. Note that these functions require the R libraries `primes` and `Rmpfr`. In this script, we also give an illustrative example of what the output CP-nets look like as R objects. We also show how to generate an associated outcome. These are the required inputs for the dominance testing functions.
 
 The CP-net generator function works as follows:
 1. Generate a valid dagcode.
@@ -50,7 +50,7 @@ We tested three different pruning methods:
 
 We tested each of these methods used individually, all possible pairwise combinations, and all three methods used together.
 This gives us 7 pruning schema options.
-Again, we refer you to section 6 of ARXIV LINK for a detailed description of how these three pruning methods work as well as how they are combined.
+Again, we refer you to section 6 of ARXIV LINK for a detailed description of how these three pruning methods work, as well as how they can be combined.
 
 ## Leaf Prioritisation methods
 There have been several methods of leaf prioritisation suggested in the existing literature.
