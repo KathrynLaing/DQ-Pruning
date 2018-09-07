@@ -24,20 +24,22 @@ These are all provided as R scripts and allow you to repeat these experiments wi
 You may also vary the values of the maximum possible size of variable domain and the maximum number of parents a variable can have (we left this as *(n-1)* in our experiments, which does not impose any condition upon the generated CP-nets).
 
 # CP-Net Generator
-The CP-net generator we used for these experiments takes some inspiration from the CP-net generator described in (Allen et al., 2016). In particular, the usage of the dagcode representation of DAGs, and the test for conditional preference table (CPT) degeneracy. However, our generator does not guarantee a specific distribution over the generated CP-nets. This is because the probability vectors required by Allen et al. (2016), to make their generation uniform, required more precision than was possible for our computational resources. Our generator also differs from theirs in that it allows variables to have different domain sizes (whereas Allen et al. (2016) requires all variables to have the same domain size).
+The CP-net generator we used for these experiments takes some inspiration from the CP-net generator described by Allen et al. (2016). In particular, the usage of the dagcode representation of DAGs, and the test for conditional preference table (CPT) degeneracy. However, our generator does not guarantee a specific distribution over the generated CP-nets. This is because the probability vectors required by Allen et al. (2016), to make their generation uniform, required more precision than was possible for our computational resources. Our generator also differs from theirs in that it allows variables to have different domain sizes (whereas Allen et al. (2016) requires all variables to have the same domain size).
 
-The CP-net generator function, `rand.cpn` is given in the R script `CPNGenerator.R`, along with all of its dependent functions. Note that these functions require the R libraries `primes` and `Rmpfr`. In this script, we also illustrate through an example what the output CP-nets look like as R objects. We also give an example of generating an associated outcome. These are the required inputs for the following dominance testing functions.
+The CP-net generator function, `rand.cpn`, is given in the R script `CPNGenerator.R`, along with all of its dependent functions. Note that these functions require the R libraries `primes` and `Rmpfr`. In this script, we also give an illustrative example of what the output CP-nets look like as R objects. We also show how to generate an associated outcome. These are the required inputs for the dominance testing functions.
 
 The CP-net generator function works as follows:
-1. Generate a valid dagcode
-2. Convert this dagcode to the adjacency matrix, *A*, of the associated DAG
-3. `for` each variable: Generate a random CPT
-4. `if` any of these CPTs are degenerate `then` go back to step 3
-5. Return the CP-net as the pair (*A*, *CPT*) where *CPT* is a list of the generated CPTs
+1. Generate a valid dagcode.
+2. Convert this dagcode to the adjacency matrix, *A*, of the associated DAG.
+3. `for` each variable: Generate a random CPT. Let *CPT* denote this list of *n* CPTs.
+4. `if` any of the CPTs in *CPT* are degenerate `then` go back to step 3
+5. Return the CP-net as the pair (*A*, *CPT*).
 
-For the theory of dagcodes, obtaining DAGs from dagcodes, and their equivalence, we refer you to Allen et al. (2016). A CPT, say the CPT of variable *X* (CPT(*X*)), is degenerate, or invalid, if it implies that one of the parents of *X* is not valid. A parent, *Y*, of *X* is valid if you can change the user's preference over *X* by changing the value taken by *Y only*. Thus, a CPT of *X* is valid (non-degenerate) if, for every parent *Y*, there are two rows where the parental assignment differs only on the value taken by *Y* and the preference over *X* is different in these two rows.
+For the theory of dagcodes and obtaining DAGs from dagcodes, we refer you to Allen et al. (2016). 
 
-`rand.cpn(n,p,d)` outputs a random CP-net with *n* variables, each of which has domain size in 2-*d*, and each of which has no more than *p* parents.
+A CPT, say the CPT of variable *X* (CPT(*X*)), is degenerate (invalid) if it implies that one of the parents of *X* is not valid. A parent, *Y*, of *X* is valid if you can change the user's preference over *X* by changing the value taken by *Y only*. Thus, a CPT of *X* is valid (non-degenerate) if, for every parent *Y*, there are two rows where the parental assignment differs only on the value taken by *Y* and the preference over *X* is different in these two rows.
+
+The function `rand.cpn(n,p,d)` outputs a random CP-net with *n* variables, where each variable has no more than *p* parents, and each variable has a domain size in 2-*d*.
 
 # Dominance Testing Functions
 ## Pruning Methods
