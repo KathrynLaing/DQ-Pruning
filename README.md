@@ -60,7 +60,7 @@ Thus, we consider the following prioritisation heuristics:
 * Minimal Depth - Simply selects a leaf at minimal depth in the current search tree.
 * Penalty Prioritisation (Li et al., 2011) - Selects a leaf which has minimal *f* (evaluation function for penalty pruning) value.
 * Rank Prioritisation - Selects a leaf with maximal rank, *r*, value.
-* Rank + Difference Prioritisation - Selects a leaf, *o*, with minimal *r(o) + L_D(o, o_1)* value (for the query '*o_1>o_2*?').
+* Rank + Difference Prioritisation - Selects a leaf, *o*, with maximal *r(o) + L_D(o, o_1)* value (for the query '*o_1>o_2*?').
 
 The latter two are our suggested heuristics, based upon our rank values introduced in ARXIV LINK.
 Search directions with higher rank (or rank + diff.) values are more likely to either be successful in reaching o_1 or to terminate quickly.
@@ -86,7 +86,7 @@ This makes the total number of tested functions 13.
 In ARXIV LINK, for each pruning option, only one function's performance was presented. For those pruning methods with multiple prioritisation options, it is the function that uses rank pruning that is presented in the paper. The reasoning for this is given below in the Results Plots section.
 
 ## R Functions
-The R functions to answer dominance queries using these different functions are given in the R Script `DominanceTestingFunctions.R`.
+The R functions to answer dominance queries using these different methods are given in the R Script `DominanceTestingFunctions.R`.
 Suppose we wish to answer the dominance query 'o1>o2 ?' (o1, o2 outcomes) for the CP-net N.
 Let `A` be the adjacency matrix of the structure of N and let `CPT` be a list of the conditional preference tables (CPTs) of N.
 To answer this dominance query using the different pruning and prioritisation combinations above, use the following R functions, found in `DominanceTestingFunctions.R`:
@@ -102,9 +102,9 @@ To answer this dominance query using the different pruning and prioritisation co
 * **Rank Pruning + Penalty Pruning, Rank Prioritisation**\
 `DQ.PR(o1,o2,A,CPT,priority="rank",suffix=FALSE,dig)`
 * **Rank Pruning + Penalty Pruning, Rank + Difference Prioritisation**\
-`DQ.Rank(o1,o2,A,CPT,priority="rank.diff",suffix=FALSE,dig)`
+`DQ.PR(o1,o2,A,CPT,priority="rank.diff",suffix=FALSE,dig)`
 * **Rank Pruning + Penalty Pruning, Penalty Prioritisation**\
-`DQ.Rank(o1,o2,A,CPT,priority="penalty",suffix=FALSE,dig)`
+`DQ.PR(o1,o2,A,CPT,priority="penalty",suffix=FALSE,dig)`
 * **Rank Pruning + Suffix Fixing, Rank Prioritisation**\
 `DQ.Rank(o1,o2,A,CPT,priority="rank",suffix=TRUE,dig)`
 * **Rank Pruning + Suffix Fixing, Rank + Difference Prioritisation**\
@@ -114,20 +114,20 @@ To answer this dominance query using the different pruning and prioritisation co
 * **Rank Pruning + Penalty Pruning + Suffix Fixing, Rank Prioritisation**\
 `DQ.PR(o1,o2,A,CPT,priority="rank",suffix=TRUE,dig)`
 * **Rank Pruning + Penalty Pruning + Suffix Fixing, Rank + Difference Prioritisation**\
-`DQ.Rank(o1,o2,A,CPT,priority="rank.diff",suffix=TRUE,dig)`
+`DQ.PR(o1,o2,A,CPT,priority="rank.diff",suffix=TRUE,dig)`
 * **Rank Pruning + Penalty Pruning + Suffix Fixing, Penalty Prioritisation**\
-`DQ.Rank(o1,o2,A,CPT,priority="penalty",suffix=TRUE,dig)`
+`DQ.PR(o1,o2,A,CPT,priority="penalty",suffix=TRUE,dig)`
 
-Note that `dig` is a specified level of precision. How this is calculated, for the CP-net of interest, is given in `DominanceTestingFunctions.R`. Further, each of these functions relies on a set of minor functions (`DP`,`ancestor`,`n.val`,`Rank`,`Penalty`,and `Pen.Rank`) that are given at the start of `DominanceTestingFunctions.R` and must be loaded before the dominance testing functions may be used. These functions also require two R libraries, `primes` and `Rmpfr`.
+Note that `dig` is a specified level of precision. How this is calculated for the CP-net of interest is given in `DominanceTestingFunctions.R`. Each of the above functions relies on a set of minor functions (`DP`,`ancestor`,`n.val`,`Rank`,`Penalty`,and `Pen.Rank`) that are given at the start of `DominanceTestingFunctions.R` and must be loaded before the dominance testing functions may be used. These functions also require two R libraries, `primes` and `Rmpfr`.
 
-These dominance testing functions output the outcome of the dominance query, the number of outcomes traversed, and the time taken to answer the query.
+The above dominance testing functions output three results: the outcome of the dominance query, the number of outcomes traversed, and the time taken to answer the query.
 
 # Results
-The results of the experiments described about are given in the file `Raw Performance Results`. Recall that we performed the following experiment twice (once in the case of binary CP-nets `d=2`, once in the case of multivalued CP-nets where variable domains were allowed to be up to 5 `d=5`). Note that, in the binary case we used `n=3-10` and in the multivalued case `n=3-8`. First, we generated 100 CP-nets. The *kth* CP-net is given in the file `CPN.npd.k.RData` (`p=n-1`, `k` in 1-100). The format of these CP-nets is as discussed in `CPNGenerator.R`.
+The results of the experiments described above are given in the file `Raw Performance Results`. Recall that we performed the following experiment twice (once in the case of binary CP-nets, `d=2`, with `n=3-10` and once in the case of multivalued CP-nets, `d=5`, with `n=3-8`). First, we generated 100 CP-nets. The *kth* CP-net is given in the file `CPN.npd.k.RData` (`p=n-1`, `k` in 1-100). The format of these CP-nets is as discussed in `CPNGenerator.R`.
 
-For each of these CP-nets, 10 dominance queries were generated. The 10 dominance queries for the `CPN.npd.k.RData` CP-net can be found in the file `DQ.npd.k.RData`. A dominance query asks if 'o1>o2' is entailed. The 10 o1 outcomes are given in order in the vector `O1` (which has length *10 x n*). Similarly, the o2 outcomes are given in vector `O2`.
+For each of these CP-nets, 10 dominance queries were generated. The 10 dominance queries for the `CPN.npd.k.RData` CP-net can be found in the file `DQ.npd.k.RData`. A dominance query asks if '*o1>o2*' is entailed. The 10 *o1* outcomes are given in order in the vector `O1` (which has length *10 x n*). Similarly, the *o2* outcomes are given in vector `O2`.
 
-Each of these 1000 queries were then answered by the 13 different dominance testing functions described above. The result and performance of these functions, when answering the 10 queries for the CP-net `CPN.npd.k.RData`, can be found in the following files:
+Each of these 1000 queries was then answered by the 13 different dominance testing functions described above. The query outcomes and performance of the function for the 10 queries in `DQ.npd.k.RData` (for the CP-net `CPN.npd.k.RData`) can be found in the following files:
 
 * **Rank Pruning, Rank Prioritisation** `Rank.R.npd.k.RData`
 * **Rank Pruning, Rank + Difference Prioritisation** `Rank.RDiff.npd.k.RData`
@@ -143,7 +143,7 @@ Each of these 1000 queries were then answered by the 13 different dominance test
 * **Rank Pruning + Penalty Pruning + Suffix Fixing, Rank + Difference Prioritisation** `Pen.Rank.SF.RDiff.npd.k.RData`
 * **Rank Pruning + Penalty Pruning + Suffix Fixing, Penalty Prioritisation** `Pen.Rank.SF.P.npd.k.RData`
 
-Each of these files contains a list and two vectors, all of length 10. The list, `Result`, gives the outcomes of the 10 dominance queries, as found by this function (note: the `Result` list for all 13 functions sohuld be identical). This will either be "False, N does not entail o1 > o2" or "True, N does entail o1 > o2" for each entry of `Result`. The two vectors should end in `Count` and `Time`, the begining is determined by the function used. For example, `Pen.SF.npd.k.RData` countains {`Result`, `Pen.F.SUFF.Count`, `Pen.F.SUFF.Time`}. This prefix is indicative of the function used, though some contain naming conventions from previous versions of this experiment, e.g. the F in the given example. The `Count` vector gives the number of outcomes considered in each of the 10 queries before an answer cound be determined (when using the given dominance testing function). The `Time` vector gives the time elapsed before an answer cound be determined, for each of the 10 queries (when using the given dominance testing function).
+Each of these files contains a list and two vectors, all of length 10. The list, `Result`, gives the outcomes of the 10 dominance queries, as found by this function (note: the `Result` list for all 13 functions should be identical). This will either be "False, N does not entail o1 > o2" or "True, N does entail o1 > o2" for each entry of `Result`. The two vectors should end in `Count` and `Time`, the begining is determined by the function used. For example, `Pen.SF.npd.k.RData` countains {`Result`, `Pen.F.SUFF.Count`, `Pen.F.SUFF.Time`}. This prefix is indicative of the function used, though some of the prefixes contain naming conventions from previous versions of this experiment, e.g. the F in the given example. The `Count` vector gives the number of outcomes considered before an answer cound be determined, for each of the 10 queries (when using the given dominance testing function). The `Time` vector gives the time elapsed before an answer cound be determined, for each of the 10 queries (when using the given dominance testing function).
 
 Note that the data given is not complete. For the non-binary case (`d=5`), the experiments have not completed in the following cases. Suffix fixing for `n=7,8`. Penalty pruning for `n=8`. Penalty pruning + suffix fixing for `n=8`. Thus, these results are not included in the file. Once they have completed, the results files will be added. As you will see from the data/plots, these three functions perform significantly worse than the others. That is, they take considerably longer on average to answer dominance queries, which is why these experiments in particular have not yet completed.
 
