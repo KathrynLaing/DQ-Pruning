@@ -159,7 +159,8 @@ Pen.Rank<-function(o,A,CPT,dig){
 #INPUTS:
 #CP-Net consisting of adjacency matrix (A) and CPTs (CPT)
 #See CP-net generator script for CP-net input format
-#Dominance query "N|= o1>o2?", outcomes o1, o2 are input as vectors (as described in Appendix B of ARXIV LINK)
+#Dominance query "N|= o1>o2?", outcomes o1, o2 are input as vectors (as described in Appendix B of
+#ARXIV LINK and illustrated in the R script for the CP-net generator)
 
 
 #First Calculate the required precision for the given CP-net
@@ -223,7 +224,7 @@ DQ.Rank<-function(o1,o2,A,CPT,priority="rank",suffix=TRUE,dig){
     anc=c(anc,length(a))
   }
   #Anc - list of the ancestor sets for each variable
-  #anc - vector giveing the number of ancestors for each variable
+  #anc - vector giving the number of ancestors for each variable
   RTO=order(-anc)
   D=mpfrArray(NA,dim = n, precBits = dig)
   for(i in RTO){
@@ -794,7 +795,7 @@ DQ.PR<-function(o1,o2,A,CPT,priority="penalty",suffix=TRUE,dig){
     anc=c(anc,length(a))
   }
   #Anc - list of the ancestor sets for each variable
-  #anc - vector giveing the number of ancestors for each variable
+  #anc - vector giving the number of ancestors for each variable
   RTO=order(-anc)
   D=mpfrArray(NA,dim = n, precBits = dig)
   for(i in RTO){

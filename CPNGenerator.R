@@ -440,20 +440,20 @@ A=CPN[[1]]
 CPT=CPN[[2]]
 
 CPT[[1]]
-#[1] 3 2 1
+#[1] 3 1 2
 
 #As variable 1 has no parents, CPT(1) is simply the preference order over variable 1
 #As this list is of length 3, we can see that variable 1 has domain size 3
 #Let us say that the domain of variable 1 is {a1,a2,a3}
 #The kth entry of the preference order is the preference position of the kth value
-#Thus, a1 is the 3rd most preferred, a2 is the 2nd most preferred, and a3 is the most preferred
-#So this preference order is a3>a2>a1
+#Thus, a1 is the 3rd most preferred, a2 is the most preferred, and a3 is the 2nd most preferred
+#So this preference order is a2>a3>a1
 
 #Now, lets say the values of variable 2 are b1,b2,..., variable 3 is c1,c2,.., variable 4 is d1,d2,...
 #Recall that we do not yet know which of these variables are binary or tertiary
 
 #We know that variable 2 has variables 1,3,4 as parents. To see the preference order over variable 2
-#under the different parental assignments, we use the following commands
+#under the different parental assignments, we use the following command
 CPT[[2]][1,1,1,]
 #This gives the preference order over variable 2 under
 #(Var1=a1,Var3=c1,Var4=d1)
@@ -467,7 +467,7 @@ dim(CPT[[2]])
 
 #As we input the parent values to CPT[[2]] in the above way to obtain the preference order,
 #looking at the dimension of CPT[[2]] shows us the domain sizes for the parennts (as well as Var2)
-#This shows us Var1 is tertiary (as we knew), Var 3&4 are binary, and Var2 is binary
+#This shows us Var1 is tertiary (as we knew), Var 3&4 are binary, and Var2 is binary (as we knew)
 
 CPT[[2]][3,2,1,]
 #[1] 1 2
@@ -497,7 +497,7 @@ o=c(3,1,2,2)
 
 #This is an example of an outcome. In o we have Var1=a3, Var2=b1, Var3=c2, Var4=d2
 
-#The following code randomly generates outcomes for our CP-net, given that N, the vector of domain sizes
+#The following code randomly generates outcomes for our CP-net, given that N, the vector of domain sizes,
 #has been previously calculated
 
 n=4
