@@ -160,7 +160,7 @@ Pen.Rank<-function(o,A,CPT,dig){
 #CP-Net consisting of adjacency matrix (A) and CPTs (CPT)
 #See CP-net generator script for CP-net input format
 #Dominance query "N|= o1>o2?", outcomes o1, o2 are input as vectors (as described in Appendix B of
-#ARXIV LINK and illustrated in the R script for the CP-net generator)
+#Laing et al. (2018) (arxiv.org/abs/1712.08588) and illustrated in the R script for the CP-net generator)
 
 
 #First Calculate the required precision for the given CP-net
@@ -187,7 +187,7 @@ dig=max(c((2*ceiling(log(prod(N),base=2))+1),40))
 
 #-Outputs:  list of length 3:
 #           1)DQ result, either "False, N does not entail o1 > o2" or "False, N does not entail o1 > o2"
-#           2)Outcomes.Considered, as defined in ARXIV LINK
+#           2)Outcomes.Considered, defined in Laing et al. (2018) (arxiv.org/abs/1712.08588) as "outcomes traversed"
 #           3)Time.Elapsed in seconds until the function terminates (i.e. time taken to answer the query)
 
 DQ.Rank<-function(o1,o2,A,CPT,priority="rank",suffix=TRUE,dig){
@@ -430,7 +430,7 @@ DQ.Rank<-function(o1,o2,A,CPT,priority="rank",suffix=TRUE,dig){
 
 #-Outputs:  list of length 3:
 #           1)DQ result, either "False, N does not entail o1 > o2" or "False, N does not entail o1 > o2"
-#           2)Outcomes.Considered, as defined in ARXIV LINK
+#           2)Outcomes.Considered, defined in Laing et al. (2018) (arxiv.org/abs/1712.08588) as "outcomes traversed"
 #           3)Time.Elapsed in seconds until the function terminates (i.e. time taken to answer the query)
 
 DQ.Penalty<-function(o1,o2,A,CPT,suffix=TRUE,dig){
@@ -617,7 +617,7 @@ DQ.Penalty<-function(o1,o2,A,CPT,suffix=TRUE,dig){
 
 #-Outputs:  list of length 3:
 #           1)DQ result, either "False, N does not entail o1 > o2" or "False, N does not entail o1 > o2"
-#           2)Outcomes.Considered, as defined in ARXIV LINK
+#           2)Outcomes.Considered, defined in Laing et al. (2018) (arxiv.org/abs/1712.08588) as "outcomes traversed"
 #           3)Time.Elapsed in seconds until the function terminates (i.e. time taken to answer the query)
 
 DQ.SF<-function(o1,o2,A,CPT,dig){
@@ -746,7 +746,7 @@ DQ.SF<-function(o1,o2,A,CPT,dig){
 
 #-Outputs:  list of length 3:
 #           1)DQ result, either "False, N does not entail o1 > o2" or "False, N does not entail o1 > o2"
-#           2)Outcomes.Considered, as defined in ARXIV LINK
+#           2)Outcomes.Considered, defined in Laing et al. (2018) (arxiv.org/abs/1712.08588) as "outcomes traversed"
 #           3)Time.Elapsed in seconds until the function terminates (i.e. time taken to answer the query)
 
 DQ.PR<-function(o1,o2,A,CPT,priority="penalty",suffix=TRUE,dig){
