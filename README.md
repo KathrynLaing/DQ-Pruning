@@ -1,12 +1,12 @@
-This repository is a counterpart to our paper, ARXIV LINK, where we give additional details of the experiment described in Section 6. This includes:
+This repository is a counterpart to our paper, Laing et al. (2018), where we give additional details of the experiment described in Section 6. This includes:
 1. A description of the random CP-net generator used, as well as the code for this generator
-2. An explanation of the different leaf prioritisations tested and which prioritisations were used in the presented results in ARXIV LINK.
+2. An explanation of the different leaf prioritisations tested and which prioritisations were used in the presented results in Laing et al. (2018).
 3. The code for our different dominance testing functions.
 4. The raw results of our experiments (using all possible prioritisation options).
 5. Plots of these results, showing average perfromance of the different dominance testing functions. These are similar to those given in the paper, only now presenting the results for all prioritisation options.
 
 # Experiment
-As detailed in our paper, ARXIV LINK, we conducted an experiment to compare the performance of several dominance testing functions for CP-Nets.
+As detailed in our paper, Laing et al. (2018), we conducted an experiment to compare the performance of several dominance testing functions for CP-Nets.
 Each dominance testing function answers dominance queries by building the associated search tree.
 To improve efficiency, a pruning method is used to prune certain branches of this tree as it is constructed.
 In order to fully specify how a dominance testing function works, one must also specify the method of leaf prioritisation used (when building up the tree).
@@ -44,13 +44,13 @@ The function `rand.cpn(n,p,d)` outputs a random CP-net with *n* variables, where
 # Dominance Testing Functions
 ## Pruning Methods
 We tested three different pruning methods:
-* Rank Pruning - ARXIV LINK
+* Rank Pruning - (Laing et al., 2018)
 * Penalty Pruning - (Li et al., 2011)
 * Suffix Fixing - (Boutilier et al., 2004)
 
 We tested each of these methods used individually, all possible pairwise combinations, and all three methods used together.
 This gives us 7 pruning schema options.
-Again, we refer you to section 6 of ARXIV LINK for a detailed description of how these three pruning methods work, as well as how they can be combined.
+Again, we refer you to section 6 of Laing et al. (2018) for a detailed description of how these three pruning methods work, as well as how they can be combined.
 
 ## Leaf Prioritisation methods
 There have been several methods of leaf prioritisation suggested in the existing literature.
@@ -62,7 +62,7 @@ Thus, we consider the following prioritisation heuristics:
 * Rank Prioritisation - Selects a leaf with maximal rank, *r*, value.
 * Rank + Difference Prioritisation - Selects a leaf, *o*, with maximal *r(o) + L_D(o, o_1)* value (for the query '*o_1>o_2*?').
 
-The latter two are our suggested heuristics, based upon our rank values introduced in ARXIV LINK.
+The latter two are our suggested heuristics, based upon our rank values introduced in Laing et al. (2018).
 Search directions with higher rank (or rank + diff.) values are more likely to either be successful in reaching o_1 or to terminate quickly.
 Thus, it makes sense to prioritise these directions.
 
@@ -83,7 +83,7 @@ Note that, as minimal depth is not an intelligent heuristic, it was tested only 
 
 This makes the total number of tested functions 13.
 
-In ARXIV LINK, for each pruning option, only one function's performance was presented. For those pruning methods with multiple prioritisation options, it is the function that uses rank pruning that is presented in the paper. The reasoning for this is given below in the Results Plots section.
+In Laing et al. (2018), for each pruning option, only one function's performance was presented. For those pruning methods with multiple prioritisation options, it is the function that uses rank pruning that is presented in the paper. The reasoning for this is given below in the Results Plots section.
 
 ## R Functions
 The R functions to answer dominance queries using these different methods are given in the R Script `DominanceTestingFunctions.R`.
@@ -152,9 +152,9 @@ For each `n` and `d` combination, each of the 13 dominance testing functions are
 
 Each data set is presented over three plots. The prefix of the PDF identifies which data set it is for (`Binary-Outcomes`,`Binary-Time`, `Multivalued-Outcomes`,`Multivalued-Time`). Each data set has three plots, with the title suffixes `-Single`, `-Pairs`, and `-Triples`. The `Single` plot shows the performance of the single pruning methods (Rank, Penalty, Suffix Fixing), with all possible leaf prioritisations. This plot is given on a log scale to preserve legibility. The `Pairs` plot shows the performance of all pairwise combinations (Rank + Penalty, Penalty + Suffix Fixing, Rank + Suffix Fixing), with all possible leaf prioritisations. The `Triples` plot shows the performance of the dominance testing functions that use all three pruning measures. Some functions appear in multiple plots so that performance can be compared between different plots.
 
-The shaded areas in the plot represent +/-standard error intervals. For a discussion of the variability represented by this interval, we refer you to ARXIV LINK. In the `Single` plot, it is the standard error interval of the 'Rank Pruning with Rank + Difference Prioritisation' function. In the `Pairs` plot, it is the standard error interval of the 'Rank Pruning + Suffix Fixing with Rank Prioritisation' function. In the `Triples` plot, it is the standard error interval of the 'Penalty Pruning + Rank Pruning +Suffix Fixing with Penalty Prioritisation' function.
+The shaded areas in the plot represent +/-standard error intervals. For a discussion of the variability represented by this interval, we refer you to Laing et al. (2018). In the `Single` plot, it is the standard error interval of the 'Rank Pruning with Rank + Difference Prioritisation' function. In the `Pairs` plot, it is the standard error interval of the 'Rank Pruning + Suffix Fixing with Rank Prioritisation' function. In the `Triples` plot, it is the standard error interval of the 'Penalty Pruning + Rank Pruning +Suffix Fixing with Penalty Prioritisation' function.
 
-For a discussion of these results, please consult ARXIV LINK. The additional results presented here (as opposed to in the paper) provide a comparison of the same pruning method when tested with different prioritisation techniques. For the functions where prioritisation was allowed to vary, rank prioritsation performs better than penalty prioritisation which in turn performs better than rank + difference prioritisation in the majority of cases. This is why, for all such functions, the rank prioritisation case is presented in ARXIV LINK as the optimal prioritisation choice. However, this relative performance of the different prioritisations is not always the case. Further, the difference made to performance by switching prioritisation method is generally not significant. Thus, from these results, we do not feel able to conclude that one prioritisation choice is better than another in general.
+For a discussion of these results, please consult Laing et al. (2018). The additional results presented here (as opposed to in the paper) provide a comparison of the same pruning method when tested with different prioritisation techniques. For the functions where prioritisation was allowed to vary, rank prioritsation performs better than penalty prioritisation which in turn performs better than rank + difference prioritisation in the majority of cases. This is why, for all such functions, the rank prioritisation case is presented in Laing et al. (2018) as the optimal prioritisation choice. However, this relative performance of the different prioritisations is not always the case. Further, the difference made to performance by switching prioritisation method is generally not significant. Thus, from these results, we do not feel able to conclude that one prioritisation choice is better than another in general.
 
 **ACKNOWLEDGEMENTS**\
 The work of K. Laing was supported by a University of Leeds Research Scholarship. This work was undertaken on ARC3, part of the High Performance Computing facilities at the University of Leeds, UK.
@@ -163,5 +163,7 @@ The work of K. Laing was supported by a University of Leeds Research Scholarship
 Allen, T.E., Goldsmith, G., Justice, H.E., Mattei, N., and Raines, K. (2016). Generating CP-nets Uniformly at Random. *Proc. of 30th Annual Converence of the Association for the Advancement of Artificial Intelligence*, pages 872-878, Arizona, USA.
 
 Boutilier, C., Brafman, R. I., Domshlak, C., Hoos, H. H., and Poole, D. (2004). CP-nets: A tool for representing and reasoning with conditional *Ceteris Paribus* preference statements. *Journal of Artifcial Intelligence Research*, 21:135-191.
+
+Laing, K., Thwaites, P. A., and Gosling, J. P. (2018). Rank pruning for dominance queries in CP-nets. *arXiv preprint*. arXiv: 1712.08588.
 
 Li, M., Vo, Q. B., and Kowalczyk, R. (2011). Efficient heuristic approach to dominance testing in CP-nets. In Tumer, Yolum, Sonenberg, and Stone, editors, *Proc. of 10th International Conference on Autonomous Agents and Multiagent Systems*, pages 353-360, Taipei, Taiwan.
